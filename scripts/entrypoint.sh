@@ -42,11 +42,13 @@ if [ "$GLUU_SECRET_ADAPTER" != "vault" ]; then
     exit 1
 fi
 
+python /opt/scripts/wait_for.py --deps="config"
+
 if [ ! -f /deploy/touched ]; then
     if [ -f /touched ]; then
         mv /touched /deploy/touched
     else
-        python /opt/scripts/wait_for.py --deps="config,secret" && python /opt/scripts/entrypoint.py
+        python /opt/scripts/wait_for.py --deps="secret" && python /opt/scripts/entrypoint.py
     fi
 
     touch /deploy/touched
