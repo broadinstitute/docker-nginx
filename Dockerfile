@@ -15,12 +15,12 @@ RUN apk update && apk add --no-cache \
 # =====
 RUN mkdir -p /etc/certs
 RUN openssl dhparam -out /etc/certs/dhparams.pem 2048
-COPY templates/nginx.conf /etc/nginx/nginx.conf
-# RUN echo "daemon off;" >> /etc/nginx/nginx.conf
+# COPY templates/nginx.conf /etc/nginx/nginx.conf
+RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # Ports for nginx
-EXPOSE 8080
-EXPOSE 8443
+EXPOSE 80
+EXPOSE 443
 
 # ======
 # Python
@@ -92,21 +92,21 @@ RUN mkdir -p /opt/scripts /opt/templates /deploy
 COPY templates/gluu_https.conf.ctmpl /opt/templates/
 COPY scripts /opt/scripts/
 RUN chmod +x /opt/scripts/entrypoint.sh
-RUN touch /var/run/nginx.pid
+# RUN touch /var/run/nginx.pid
 
-# create non-root user
-RUN usermod -u 1000 nginx \
-    && usermod -a -G root nginx
+# # create non-root user
+# RUN usermod -u 1000 nginx \
+#     && usermod -a -G root nginx
 
-# adjust ownership
-RUN chown -R 1000:1000 /deploy \
-    && chgrp -R 0 /deploy && chmod -R g=u /deploy \
-    && chgrp -R 0 /etc/certs && chmod -R g=u /etc/certs \
-    && chgrp -R 0 /etc/nginx/conf.d && chmod -R g=u /etc/nginx/conf.d \
-    && chmod g=u /var/run/nginx.pid
-    # && chgrp 0 /var/run/nginx.pid && chmod g=u /var/run/nginx.pid
+# # adjust ownership
+# RUN chown -R 1000:1000 /deploy \
+#     && chgrp -R 0 /deploy && chmod -R g=u /deploy \
+#     && chgrp -R 0 /etc/certs && chmod -R g=u /etc/certs \
+#     && chgrp -R 0 /etc/nginx/conf.d && chmod -R g=u /etc/nginx/conf.d \
+#     && chmod g=u /var/run/nginx.pid
+#     # && chgrp 0 /var/run/nginx.pid && chmod g=u /var/run/nginx.pid
 
-USER 1000
+# USER 1000
 
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["/opt/scripts/entrypoint.sh"]
