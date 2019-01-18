@@ -42,14 +42,15 @@ if [ "$GLUU_SECRET_ADAPTER" != "vault" ]; then
     exit 1
 fi
 
+python /opt/scripts/wait_for.py --deps="config,secret"
+
 if [ ! -f /deploy/touched ]; then
     if [ -f /touched ]; then
         mv /touched /deploy/touched
     else
-        python /opt/scripts/wait_for.py --deps="config,secret" && python /opt/scripts/entrypoint.py
+        python /opt/scripts/entrypoint.py
+        touch /deploy/touched
     fi
-
-    touch /deploy/touched
 fi
 
 exec consul-template \
