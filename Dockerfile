@@ -5,6 +5,7 @@ LABEL maintainer="Gluu Inc. <support@gluu.org>"
 # ===============
 # Alpine packages
 # ===============
+
 RUN apk update && apk add --no-cache \
     openssl \
     py-pip \
@@ -13,6 +14,7 @@ RUN apk update && apk add --no-cache \
 # =====
 # nginx
 # =====
+
 RUN mkdir -p /etc/certs
 RUN openssl dhparam -out /etc/certs/dhparams.pem 2048
 # COPY templates/nginx.conf /etc/nginx/nginx.conf
@@ -25,6 +27,7 @@ EXPOSE 443
 # ======
 # Python
 # ======
+
 COPY requirements.txt /tmp/
 RUN pip install -U pip \
     && pip install -r /tmp/requirements.txt --no-cache-dir
@@ -32,6 +35,7 @@ RUN pip install -U pip \
 # ===============
 # consul-template
 # ===============
+
 ENV CONSUL_TEMPLATE_VERSION 0.19.4
 
 RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.tgz -O /tmp/consul-template.tgz \
@@ -82,6 +86,13 @@ ENV GLUU_SECRET_VAULT_CACERT_FILE /etc/certs/vault_ca.crt
 ENV GLUU_SECRET_KUBERNETES_NAMESPACE default
 ENV GLUU_SECRET_KUBERNETES_SECRET gluu
 ENV GLUU_SECRET_KUBERNETES_USE_KUBE_CONFIG false
+
+# ===========
+# Generic ENV
+# ===========
+
+ENV GLUU_WAIT_MAX_TIME 300
+ENV GLUU_WAIT_SLEEP_DURATION 5
 
 # ==========
 # misc stuff
