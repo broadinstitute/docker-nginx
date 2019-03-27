@@ -1,4 +1,4 @@
-FROM gluufederation/base-nginx:alpine
+FROM nginx:alpine
 
 LABEL maintainer="Gluu Inc. <support@gluu.org>"
 
