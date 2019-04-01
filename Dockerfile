@@ -46,6 +46,13 @@ ENV TINI_VERSION v0.18.0
 RUN wget -q https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static -O /usr/bin/tini \
     && chmod +x /usr/bin/tini
 
+# =======
+# License
+# =======
+
+RUN mkdir -p /licenses
+COPY LICENSE /licenses/
+
 # ==========
 # misc stuff
 # ==========
@@ -63,11 +70,13 @@ ENV GLUU_CONSUL_KEY_FILE /etc/certs/consul_client.key
 ENV GLUU_CONSUL_TOKEN_FILE /etc/certs/consul_token
 ENV GLUU_KUBERNETES_NAMESPACE default
 ENV GLUU_KUBERNETES_CONFIGMAP gluu
+ENV GLUU_AUTO_ACCEPT_LICENSE false
 
 RUN mkdir -p /opt/scripts /opt/templates
 COPY templates/gluu_https.conf.ctmpl /opt/templates/
 COPY scripts /opt/scripts/
 
 RUN chmod +x /opt/scripts/entrypoint.sh
+RUN chmod +x /opt/scripts/license_checker.py
 ENTRYPOINT ["tini", "--"]
-CMD ["/opt/scripts/wait-for-it", "/opt/scripts/entrypoint.sh"]
+CMD ["/opt/scripts/license_checker.py", "/opt/scripts/wait-for-it", "/opt/scripts/entrypoint.sh"]
