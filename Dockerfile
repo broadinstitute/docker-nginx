@@ -70,7 +70,7 @@ ENV GLUU_CONSUL_KEY_FILE /etc/certs/consul_client.key
 ENV GLUU_CONSUL_TOKEN_FILE /etc/certs/consul_token
 ENV GLUU_KUBERNETES_NAMESPACE default
 ENV GLUU_KUBERNETES_CONFIGMAP gluu
-ENV GLUU_AUTO_ACCEPT_LICENSE false
+ENV GLUU_AUTO_ACK_LICENSE false
 
 RUN mkdir -p /opt/scripts /opt/templates
 COPY templates/gluu_https.conf.ctmpl /opt/templates/
