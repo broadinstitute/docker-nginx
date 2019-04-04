@@ -1,6 +1,15 @@
 #!/bin/sh
 set -e
 
+cat << LICENSE_ACK
+
+# ========================================================================================= #
+# Gluu License Agreement: https://github.com/GluuFederation/gluu-docker/blob/3.1.5/LICENSE. #
+# The use of Gluu Server Docker Edition is subject to the Gluu Support License.             #
+# ========================================================================================= #
+
+LICENSE_ACK
+
 get_consul_opts() {
     local consul_scheme=0
 
