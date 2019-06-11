@@ -51,20 +51,28 @@ if [ "$GLUU_SECRET_ADAPTER" != "vault" ]; then
     exit 1
 fi
 
-python /opt/scripts/wait_for.py --deps="config,secret"
+if [ -f /etc/redhat-release ]; then
+    source scl_source enable python27 && python /app/scripts/wait_for.py --deps="config,secret"
+else
+    python /app/scripts/wait_for.py --deps="config,secret"
+fi
 
 if [ ! -f /deploy/touched ]; then
     if [ -f /touched ]; then
         mv /touched /deploy/touched
     else
-        python /opt/scripts/entrypoint.py
-        touch /deploy/touched
+        if [ -f /etc/redhat-release ]; then
+            source scl_source enable python27 && python /app/scripts/entrypoint.py
+        else
+            python /app/scripts/entrypoint.py
+        fi
     fi
+    touch /deploy/touched
 fi
 
 exec consul-template \
     -log-level info \
-    -template "/opt/templates/gluu_https.conf.ctmpl:/etc/nginx/conf.d/default.conf" \
+    -template "/app/templates/gluu_https.conf.ctmpl:/etc/nginx/conf.d/default.conf" \
     -wait 5s \
     -exec "nginx" \
     -exec-reload-signal SIGHUP \

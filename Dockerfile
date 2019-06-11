@@ -107,11 +107,9 @@ ENV GLUU_WAIT_SLEEP_DURATION 5
 
 LABEL vendor="Gluu Federation"
 
-RUN mkdir -p /opt/scripts /opt/templates /deploy
-COPY templates/gluu_https.conf.ctmpl /opt/templates/
-COPY scripts /opt/scripts/
-RUN chmod +x /opt/scripts/entrypoint.sh
-# RUN touch /var/run/nginx.pid
+RUN mkdir -p /app/scripts /app/templates /deploy
+COPY templates/gluu_https.conf.ctmpl /app/templates/
+COPY scripts /app/scripts/
 
 # # create non-root user
 # RUN usermod -u 1000 nginx \
@@ -128,4 +126,4 @@ RUN chmod +x /opt/scripts/entrypoint.sh
 # USER 1000
 
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["/opt/scripts/entrypoint.sh"]
+CMD ["sh", "/app/scripts/entrypoint.sh"]
