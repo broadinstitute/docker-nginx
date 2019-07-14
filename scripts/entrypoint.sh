@@ -1,14 +1,9 @@
 #!/bin/sh
 set -e
 
-cat << LICENSE_ACK
-
-# ========================================================================================= #
-# Gluu License Agreement: https://github.com/GluuFederation/gluu-docker/blob/4.0.0/LICENSE. #
-# The use of Gluu Server Docker Edition is subject to the Gluu Support License.             #
-# ========================================================================================= #
-
-LICENSE_ACK
+# ========
+# FUNCTION
+# ========
 
 get_consul_opts() {
     local consul_scheme=0
@@ -41,6 +36,19 @@ get_consul_opts() {
     echo $consul_opts
 }
 
+# ==========
+# ENTRYPOINT
+# ==========
+
+cat << LICENSE_ACK
+
+# ========================================================================================= #
+# Gluu License Agreement: https://github.com/GluuFederation/gluu-docker/blob/4.0.0/LICENSE. #
+# The use of Gluu Server Docker Edition is subject to the Gluu Support License.             #
+# ========================================================================================= #
+
+LICENSE_ACK
+
 if [ "$GLUU_CONFIG_ADAPTER" != "consul" ]; then
     echo "This container only support Consul as config backend."
     exit 1
@@ -51,10 +59,12 @@ if [ "$GLUU_SECRET_ADAPTER" != "vault" ]; then
     exit 1
 fi
 
+deps="config,secret"
+
 if [ -f /etc/redhat-release ]; then
-    source scl_source enable python27 && python /app/scripts/wait_for.py --deps="config,secret"
+    source scl_source enable python27 && gluu-wait --deps="$deps"
 else
-    python /app/scripts/wait_for.py --deps="config,secret"
+    gluu-wait --deps="$deps"
 fi
 
 if [ ! -f /deploy/touched ]; then

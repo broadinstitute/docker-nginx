@@ -1,4 +1,4 @@
-from gluulib import get_manager
+from pygluu.containerlib import get_manager
 
 manager = get_manager()
 

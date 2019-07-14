@@ -9,7 +9,8 @@ LABEL maintainer="Gluu Inc. <support@gluu.org>"
 RUN apk update && apk add --no-cache \
     openssl \
     py-pip \
-    shadow
+    shadow \
+    git
 
 # =====
 # nginx
@@ -17,7 +18,6 @@ RUN apk update && apk add --no-cache \
 
 RUN mkdir -p /etc/certs
 RUN openssl dhparam -out /etc/certs/dhparams.pem 2048
-# COPY templates/nginx.conf /etc/nginx/nginx.conf
 RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 
 # Ports for nginx
