@@ -24,14 +24,6 @@ RUN echo "daemon off;" >> /etc/nginx/nginx.conf
 EXPOSE 80
 EXPOSE 443
 
-# ======
-# Python
-# ======
-
-COPY requirements.txt /tmp/
-RUN pip install -U pip \
-    && pip install -r /tmp/requirements.txt --no-cache-dir
-
 # ===============
 # consul-template
 # ===============
@@ -47,9 +39,17 @@ RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VER
 # Tini
 # ====
 
-ENV TINI_VERSION v0.18.0
-RUN wget -q https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini-static -O /usr/bin/tini \
+RUN wget -q https://github.com/krallin/tini/releases/download/v0.18.0/tini-static -O /usr/bin/tini \
     && chmod +x /usr/bin/tini
+
+# ======
+# Python
+# ======
+
+COPY requirements.txt /tmp/
+RUN pip install -U pip \
+    && pip install -r /tmp/requirements.txt --no-cache-dir \
+    && apk del git
 
 # =======
 # License
@@ -62,44 +62,44 @@ COPY LICENSE /licenses/
 # Config ENV
 # ==========
 
-ENV GLUU_CONFIG_ADAPTER consul
-ENV GLUU_CONFIG_CONSUL_HOST localhost
-ENV GLUU_CONFIG_CONSUL_PORT 8500
-ENV GLUU_CONFIG_CONSUL_CONSISTENCY stale
-ENV GLUU_CONFIG_CONSUL_SCHEME http
-ENV GLUU_CONFIG_CONSUL_VERIFY false
-ENV GLUU_CONFIG_CONSUL_CACERT_FILE /etc/certs/consul_ca.crt
-ENV GLUU_CONFIG_CONSUL_CERT_FILE /etc/certs/consul_client.crt
-ENV GLUU_CONFIG_CONSUL_KEY_FILE /etc/certs/consul_client.key
-ENV GLUU_CONFIG_CONSUL_TOKEN_FILE /etc/certs/consul_token
-ENV GLUU_CONFIG_KUBERNETES_NAMESPACE default
-ENV GLUU_CONFIG_KUBERNETES_CONFIGMAP gluu
-ENV GLUU_CONFIG_KUBERNETES_USE_KUBE_CONFIG false
+ENV GLUU_CONFIG_ADAPTER=consul \
+    GLUU_CONFIG_CONSUL_HOST=localhost \
+    GLUU_CONFIG_CONSUL_PORT=8500 \
+    GLUU_CONFIG_CONSUL_CONSISTENCY=stale \
+    GLUU_CONFIG_CONSUL_SCHEME=http \
+    GLUU_CONFIG_CONSUL_VERIFY=false \
+    GLUU_CONFIG_CONSUL_CACERT_FILE=/etc/certs/consul_ca.crt \
+    GLUU_CONFIG_CONSUL_CERT_FILE=/etc/certs/consul_client.crt \
+    GLUU_CONFIG_CONSUL_KEY_FILE=/etc/certs/consul_client.key \
+    GLUU_CONFIG_CONSUL_TOKEN_FILE=/etc/certs/consul_token \
+    GLUU_CONFIG_KUBERNETES_NAMESPACE=default \
+    GLUU_CONFIG_KUBERNETES_CONFIGMAP=gluu \
+    GLUU_CONFIG_KUBERNETES_USE_KUBE_CONFIG=false
 
 # ==========
 # Secret ENV
 # ==========
 
-ENV GLUU_SECRET_ADAPTER vault
-ENV GLUU_SECRET_VAULT_SCHEME http
-ENV GLUU_SECRET_VAULT_HOST localhost
-ENV GLUU_SECRET_VAULT_PORT 8200
-ENV GLUU_SECRET_VAULT_VERIFY false
-ENV GLUU_SECRET_VAULT_ROLE_ID_FILE /etc/certs/vault_role_id
-ENV GLUU_SECRET_VAULT_SECRET_ID_FILE /etc/certs/vault_secret_id
-ENV GLUU_SECRET_VAULT_CERT_FILE /etc/certs/vault_client.crt
-ENV GLUU_SECRET_VAULT_KEY_FILE /etc/certs/vault_client.key
-ENV GLUU_SECRET_VAULT_CACERT_FILE /etc/certs/vault_ca.crt
-ENV GLUU_SECRET_KUBERNETES_NAMESPACE default
-ENV GLUU_SECRET_KUBERNETES_SECRET gluu
-ENV GLUU_SECRET_KUBERNETES_USE_KUBE_CONFIG false
+ENV GLUU_SECRET_ADAPTER=vault \
+    GLUU_SECRET_VAULT_SCHEME=http \
+    GLUU_SECRET_VAULT_HOST=localhost \
+    GLUU_SECRET_VAULT_PORT=8200 \
+    GLUU_SECRET_VAULT_VERIFY=false \
+    GLUU_SECRET_VAULT_ROLE_ID_FILE=/etc/certs/vault_role_id \
+    GLUU_SECRET_VAULT_SECRET_ID_FILE=/etc/certs/vault_secret_id \
+    GLUU_SECRET_VAULT_CERT_FILE=/etc/certs/vault_client.crt \
+    GLUU_SECRET_VAULT_KEY_FILE=/etc/certs/vault_client.key \
+    GLUU_SECRET_VAULT_CACERT_FILE=/etc/certs/vault_ca.crt \
+    GLUU_SECRET_KUBERNETES_NAMESPACE=default \
+    GLUU_SECRET_KUBERNETES_SECRET=gluu \
+    GLUU_SECRET_KUBERNETES_USE_KUBE_CONFIG=false
 
 # ===========
 # Generic ENV
 # ===========
 
-ENV GLUU_WAIT_MAX_TIME 300
-ENV GLUU_WAIT_SLEEP_DURATION 5
+ENV GLUU_WAIT_MAX_TIME=300 \
+    GLUU_WAIT_SLEEP_DURATION=5
 
 # ==========
 # misc stuff
