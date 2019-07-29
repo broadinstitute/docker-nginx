@@ -28,7 +28,7 @@ EXPOSE 443
 # consul-template
 # ===============
 
-ENV CONSUL_TEMPLATE_VERSION 0.19.4
+ENV CONSUL_TEMPLATE_VERSION 0.20.0
 
 RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.tgz -O /tmp/consul-template.tgz \
     && tar xf /tmp/consul-template.tgz -C /usr/bin/ \
