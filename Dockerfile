@@ -1,7 +1,5 @@
 FROM nginx:stable-alpine
 
-LABEL maintainer="Gluu Inc. <support@gluu.org>"
-
 # ===============
 # Alpine packages
 # ===============
@@ -105,11 +103,18 @@ ENV GLUU_WAIT_MAX_TIME=300 \
 # misc stuff
 # ==========
 
-LABEL vendor="Gluu Federation"
+LABEL name="NGINX" \
+    maintainer="Gluu Inc. <support@gluu.org>" \
+    vendor="Gluu Federation" \
+    version="4.0.0" \
+    release="dev" \
+    summary="Gluu NGINX" \
+    description="Customized NGINX server for Gluu Server"
 
 RUN mkdir -p /app/scripts /app/templates /deploy
 COPY templates/gluu_https.conf.ctmpl /app/templates/
 COPY scripts /app/scripts/
+RUN chmod +x /app/scripts/entrypoint.sh
 
 # # create non-root user
 # RUN usermod -u 1000 nginx \
@@ -126,4 +131,4 @@ COPY scripts /app/scripts/
 # USER 1000
 
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["sh", "/app/scripts/entrypoint.sh"]
+CMD ["/app/scripts/entrypoint.sh"]
