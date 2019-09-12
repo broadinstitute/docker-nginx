@@ -1,1 +1,1 @@
--e git+https://github.com/GluuFederation/pygluu-containerlib@5475df944738dacafe0caa0b01f44a617201405b#egg=pygluu-containerlib
+-e git+https://github.com/GluuFederation/pygluu-containerlib@a6c2a7ddb94e13fb8f48cbc453aa8f4bbc73ba1d#egg=pygluu-containerlib
