@@ -4,11 +4,9 @@ FROM nginx:stable-alpine
 # Alpine packages
 # ===============
 
-RUN apk update && apk add --no-cache \
-    openssl \
-    py-pip \
-    shadow \
-    git
+RUN apk update \
+    && apk add --no-cache openssl py-pip shadow \
+    && apk add --no-cache --virtual build-deps git
 
 # =====
 # nginx
@@ -46,8 +44,14 @@ RUN wget -q https://github.com/krallin/tini/releases/download/v0.18.0/tini-stati
 
 COPY requirements.txt /tmp/
 RUN pip install -U pip \
-    && pip install -r /tmp/requirements.txt --no-cache-dir \
-    && apk del git
+    && pip install -r /tmp/requirements.txt --no-cache-dir
+
+# =======
+# Cleanup
+# =======
+
+RUN apk del build-deps \
+    && rm -rf /var/cache/apk/*
 
 # =======
 # License
@@ -97,7 +101,7 @@ ENV GLUU_SECRET_ADAPTER=vault \
 # ===========
 
 ENV GLUU_WAIT_MAX_TIME=300 \
-    GLUU_WAIT_SLEEP_DURATION=5
+    GLUU_WAIT_SLEEP_DURATION=10
 
 # ==========
 # misc stuff

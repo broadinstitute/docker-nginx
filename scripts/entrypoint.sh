@@ -36,6 +36,17 @@ get_consul_opts() {
     echo $consul_opts
 }
 
+run_wait() {
+    python /app/scripts/wait.py
+}
+
+run_entrypoint() {
+    if [ ! -f /deploy/touched ]; then
+        python /app/scripts/entrypoint.py
+        touch /deploy/touched
+    fi
+}
+
 # ==========
 # ENTRYPOINT
 # ==========
@@ -49,41 +60,18 @@ cat << LICENSE_ACK
 
 LICENSE_ACK
 
-if [ "$GLUU_CONFIG_ADAPTER" != "consul" ]; then
-    echo "This container only support Consul as config backend."
-    exit 1
-fi
-
-if [ "$GLUU_SECRET_ADAPTER" != "vault" ]; then
-    echo "This container only support Vault as secret backend."
-    exit 1
-fi
-
-deps="config,secret"
-
 if [ -f /etc/redhat-release ]; then
-    source scl_source enable python27 && gluu-wait --deps="$deps"
+    source scl_source enable python27 && run_wait
+    source scl_source enable python27 && run_entrypoint
 else
-    gluu-wait --deps="$deps"
-fi
-
-if [ ! -f /deploy/touched ]; then
-    if [ -f /touched ]; then
-        mv /touched /deploy/touched
-    else
-        if [ -f /etc/redhat-release ]; then
-            source scl_source enable python27 && python /app/scripts/entrypoint.py
-        else
-            python /app/scripts/entrypoint.py
-        fi
-    fi
-    touch /deploy/touched
+    run_wait
+    run_entrypoint
 fi
 
 exec consul-template \
     -log-level info \
     -template "/app/templates/gluu_https.conf.ctmpl:/etc/nginx/conf.d/default.conf" \
-    -wait 5s \
+    -wait 10s \
     -exec "nginx" \
     -exec-reload-signal SIGHUP \
     -exec-kill-signal SIGQUIT \
