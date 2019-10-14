@@ -34,6 +34,14 @@ upstream oxpassport_backend {
     {{end}}
 }
 
+upstream casa_backend {
+    {{range service "casa|passing"}}
+        server {{.Address}}:{{.Port}};
+    {{else}}
+        server localhost:8099;
+    {{end}}
+}
+
 server {
     listen 80 default_server;
     # listen [::]:8080 default_server ipv6only=on;
@@ -183,6 +191,16 @@ server {
 
     location /passport {
         proxy_pass http://oxpassport_backend/passport;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+    }
+
+    location /casa {
+        proxy_pass http://casa_backend/casa;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
