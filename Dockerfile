@@ -110,8 +110,8 @@ ENV GLUU_WAIT_MAX_TIME=300 \
 LABEL name="NGINX" \
     maintainer="Gluu Inc. <support@gluu.org>" \
     vendor="Gluu Federation" \
-    version="4.0.1" \
-    release="02" \
+    version="4.1.0" \
+    release="dev" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
 
