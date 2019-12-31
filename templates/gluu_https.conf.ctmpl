@@ -68,8 +68,21 @@ server {
     #add_header Content-Security-Policy 'default-src "self" "unsafe-inline" {{key "/gluu/config/hostname"}}' always;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-    location / {
-        # return 302 /identity;
+    error_page 404 /custom_404.html;
+    location = /custom_404.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 500 502 503 504 /custom_50x.html;
+    location = /custom_50x.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    proxy_intercept_errors on;
+
+    location = / {
         proxy_pass http://oxtrust_backend/identity;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
