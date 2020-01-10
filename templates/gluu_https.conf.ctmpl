@@ -27,6 +27,7 @@ upstream oxshibboleth_backend {
 }
 
 upstream oxpassport_backend {
+    ip_hash;
     {{range service "oxpassport|passing"}}
         server {{.Address}}:{{.Port}};
     {{else}}
