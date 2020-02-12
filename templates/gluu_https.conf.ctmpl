@@ -75,8 +75,26 @@ server {
         internal;
     }
 
-    error_page 500 502 503 504 /custom_50x.html;
-    location = /custom_50x.html {
+    error_page 500 /custom_500.html;
+    location = /custom_500.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 502 /custom_502.html;
+    location = /custom_502.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 503 /custom_503.html;
+    location = /custom_503.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 504 /custom_504.html;
+    location = /custom_504.html {
         root /usr/share/nginx/html;
         internal;
     }

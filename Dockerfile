@@ -116,8 +116,7 @@ LABEL name="NGINX" \
     description="Customized NGINX server for Gluu Server"
 
 RUN mkdir -p /app/scripts /app/templates /deploy
-COPY static/custom_404.html /usr/share/nginx/html/
-COPY static/custom_50x.html /usr/share/nginx/html/
+COPY static/custom_*.html /usr/share/nginx/html/
 COPY templates/gluu_https.conf.ctmpl /app/templates/
 COPY scripts /app/scripts/
 RUN chmod +x /app/scripts/entrypoint.sh
