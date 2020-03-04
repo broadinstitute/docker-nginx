@@ -115,7 +115,7 @@ LABEL name="NGINX" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
 
-RUN mkdir -p /app/scripts /app/templates /deploy
+RUN mkdir -p /app/scripts /app/templates /deploy /etc/nginx/gluu
 COPY static/custom_*.html /usr/share/nginx/html/
 COPY templates/gluu_https.conf.ctmpl /app/templates/
 COPY scripts /app/scripts/
