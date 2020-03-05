@@ -5,7 +5,7 @@ FROM nginx:stable-alpine
 # ===============
 
 RUN apk update \
-    && apk add --no-cache openssl py-pip shadow \
+    && apk add --no-cache openssl py-pip \
     && apk add --no-cache --virtual build-deps git
 
 # =====
@@ -111,7 +111,7 @@ LABEL name="NGINX" \
     maintainer="Gluu Inc. <support@gluu.org>" \
     vendor="Gluu Federation" \
     version="4.1.0" \
-    release="dev" \
+    release="01" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
 
