@@ -1,22 +1,19 @@
-from gluulib import get_manager
+import os
 
-manager = get_manager()
-
-
-def render_ssl_cert():
-    ssl_cert = manager.secret.get("ssl_cert")
-    if ssl_cert:
-        with open("/etc/certs/gluu_https.crt", "w") as fd:
-            fd.write(ssl_cert)
+from pygluu.containerlib import get_manager
 
 
-def render_ssl_key():
-    ssl_key = manager.secret.get("ssl_key")
-    if ssl_key:
-        with open("/etc/certs/gluu_https.key", "w") as fd:
-            fd.write(ssl_key)
+def main():
+    manager = get_manager()
+
+    if not os.path.isfile("/etc/certs/gluu_https.crt"):
+        # pull SSL cert to a file
+        manager.secret.to_file("ssl_cert", "/etc/certs/gluu_https.crt")
+
+    if not os.path.isfile("/etc/certs/gluu_https.key"):
+        # pull SSL key to a file
+        manager.secret.to_file("ssl_key", "/etc/certs/gluu_https.key")
 
 
 if __name__ == "__main__":
-    render_ssl_cert()
-    render_ssl_key()
+    main()

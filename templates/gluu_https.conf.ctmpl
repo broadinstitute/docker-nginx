@@ -27,10 +27,19 @@ upstream oxshibboleth_backend {
 }
 
 upstream oxpassport_backend {
+    ip_hash;
     {{range service "oxpassport|passing"}}
         server {{.Address}}:{{.Port}};
     {{else}}
         server localhost:8090;
+    {{end}}
+}
+
+upstream casa_backend {
+    {{range service "casa|passing"}}
+        server {{.Address}}:{{.Port}};
+    {{else}}
+        server localhost:8099;
     {{end}}
 }
 
@@ -60,15 +69,44 @@ server {
     #add_header Content-Security-Policy 'default-src "self" "unsafe-inline" {{key "/gluu/config/hostname"}}' always;
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
-    location / {
-        # return 302 /identity;
-        proxy_pass http://oxtrust_backend/identity;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Host $host:$server_port;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_redirect off;
+    error_page 404 /custom_404.html;
+    location = /custom_404.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 500 /custom_500.html;
+    location = /custom_500.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 502 /custom_502.html;
+    location = /custom_502.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 503 /custom_503.html;
+    location = /custom_503.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    error_page 504 /custom_504.html;
+    location = /custom_504.html {
+        root /usr/share/nginx/html;
+        internal;
+    }
+
+    proxy_intercept_errors on;
+
+    location = / {
+        return 301 /identity;
+    }
+
+    location = /index.html {
+        return 301 /identity;
     }
 
     location /oxauth {
@@ -79,6 +117,17 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_redirect off;
+    }
+
+    location /oxauth/restv1 {
+        proxy_pass http://oxauth_backend/oxauth/restv1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_intercept_errors off;
     }
 
     location /.well-known/openid-configuration {
@@ -161,6 +210,17 @@ server {
         proxy_redirect off;
     }
 
+    location /identity/restv1 {
+        proxy_pass http://oxtrust_backend/identity/restv1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_intercept_errors off;
+    }
+
     location /.well-known/scim-configuration {
         proxy_pass http://oxtrust_backend/identity/restv1/scim-configuration;
         proxy_set_header Host $host;
@@ -190,4 +250,16 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_redirect off;
     }
+
+    location /casa {
+        proxy_pass http://casa_backend/casa;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+    }
+
+    include /etc/nginx/gluu/*.conf;
 }

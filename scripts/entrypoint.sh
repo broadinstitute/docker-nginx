@@ -1,14 +1,9 @@
 #!/bin/sh
 set -e
 
-cat << LICENSE_ACK
-
-# ========================================================================================= #
-# Gluu License Agreement: https://github.com/GluuFederation/gluu-docker/blob/3.1.5/LICENSE. #
-# The use of Gluu Server Docker Edition is subject to the Gluu Support License.             #
-# ========================================================================================= #
-
-LICENSE_ACK
+# ========
+# FUNCTION
+# ========
 
 get_consul_opts() {
     local consul_scheme=0
@@ -41,31 +36,33 @@ get_consul_opts() {
     echo $consul_opts
 }
 
-if [ "$GLUU_CONFIG_ADAPTER" != "consul" ]; then
-    echo "This container only support Consul as config backend."
-    exit 1
-fi
+run_wait() {
+    python /app/scripts/wait.py
+}
 
-if [ "$GLUU_SECRET_ADAPTER" != "vault" ]; then
-    echo "This container only support Vault as secret backend."
-    exit 1
-fi
-
-python /opt/scripts/wait_for.py --deps="config,secret"
-
-if [ ! -f /deploy/touched ]; then
-    if [ -f /touched ]; then
-        mv /touched /deploy/touched
-    else
-        python /opt/scripts/entrypoint.py
+run_entrypoint() {
+    if [ ! -f /deploy/touched ]; then
+        python /app/scripts/entrypoint.py
         touch /deploy/touched
     fi
+}
+
+# ==========
+# ENTRYPOINT
+# ==========
+
+if [ -f /etc/redhat-release ]; then
+    source scl_source enable python27 && run_wait
+    source scl_source enable python27 && run_entrypoint
+else
+    run_wait
+    run_entrypoint
 fi
 
 exec consul-template \
     -log-level info \
-    -template "/opt/templates/gluu_https.conf.ctmpl:/etc/nginx/conf.d/default.conf" \
-    -wait 5s \
+    -template "/app/templates/gluu_https.conf.ctmpl:/etc/nginx/conf.d/default.conf" \
+    -wait 10s \
     -exec "nginx" \
     -exec-reload-signal SIGHUP \
     -exec-kill-signal SIGQUIT \
