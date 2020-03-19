@@ -24,7 +24,7 @@ EXPOSE 443
 # consul-template
 # ===============
 
-ENV CONSUL_TEMPLATE_VERSION 0.20.0
+ENV CONSUL_TEMPLATE_VERSION 0.24.1
 
 RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.tgz -O /tmp/consul-template.tgz \
     && tar xf /tmp/consul-template.tgz -C /usr/bin/ \
@@ -110,7 +110,7 @@ ENV GLUU_WAIT_MAX_TIME=300 \
 LABEL name="NGINX" \
     maintainer="Gluu Inc. <support@gluu.org>" \
     vendor="Gluu Federation" \
-    version="4.1.0" \
+    version="4.1.1" \
     release="01" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
@@ -136,4 +136,4 @@ RUN chmod +x /app/scripts/entrypoint.sh
 # USER 1000
 
 ENTRYPOINT ["tini", "-g", "--"]
-CMD ["/app/scripts/entrypoint.sh"]
+CMD ["sh", "/app/scripts/entrypoint.sh"]
