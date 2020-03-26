@@ -207,7 +207,7 @@ server {
         proxy_connect_timeout 2;
     }
 
-    location /.well-known/fido-u2f-configuration {
+    location /.well-known/fido-configuration {
         proxy_pass http://oxauth_backend/oxauth/restv1/fido-configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
