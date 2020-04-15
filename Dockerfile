@@ -5,7 +5,9 @@ FROM nginx:stable-alpine
 # ===============
 
 RUN apk update \
-    && apk add --no-cache openssl py-pip \
+    && apk add --no-cache openssl py3-pip \
+    && ln -sf /usr/bin/python3 /usr/bin/python \
+    && ln -sf /usr/bin/pip3 /usr/bin/pip \
     && apk add --no-cache --virtual build-deps git
 
 # =====
@@ -110,8 +112,8 @@ ENV GLUU_WAIT_MAX_TIME=300 \
 LABEL name="NGINX" \
     maintainer="Gluu Inc. <support@gluu.org>" \
     vendor="Gluu Federation" \
-    version="4.1.1" \
-    release="01" \
+    version="4.2.0" \
+    release="dev" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
 
