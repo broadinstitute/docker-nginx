@@ -6,9 +6,9 @@ FROM nginx:stable-alpine
 
 RUN apk update \
     && apk add --no-cache openssl py3-pip \
+    && apk add --no-cache --virtual build-deps git \
     && ln -sf /usr/bin/python3 /usr/bin/python \
-    && ln -sf /usr/bin/pip3 /usr/bin/pip \
-    && apk add --no-cache --virtual build-deps git
+    && ln -sf /usr/bin/pip3 /usr/bin/pip
 
 # =====
 # nginx
