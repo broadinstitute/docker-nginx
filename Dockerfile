@@ -5,10 +5,8 @@ FROM nginx:stable-alpine
 # ===============
 
 RUN apk update \
-    && apk add --no-cache openssl py3-pip tini \
-    && apk add --no-cache --virtual build-deps git \
-    && ln -sf /usr/bin/python3 /usr/bin/python \
-    && ln -sf /usr/bin/pip3 /usr/bin/pip
+    && apk add --no-cache openssl py3-pip tini curl \
+    && apk add --no-cache --virtual build-deps git
 
 # =====
 # nginx
@@ -33,20 +31,13 @@ RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VER
     && chmod +x /usr/bin/consul-template \
     && rm /tmp/consul-template.tgz
 
-# ====
-# # Tini
-# # ====
-
-# RUN wget -q https://github.com/krallin/tini/releases/download/v0.18.0/tini-static -O /usr/bin/tini \
-#     && chmod +x /usr/bin/tini
-
 # ======
 # Python
 # ======
 
 COPY requirements.txt /tmp/
-RUN pip install -U pip \
-    && pip install -r /tmp/requirements.txt --no-cache-dir
+RUN pip3 install -U pip \
+    && pip3 install -r /tmp/requirements.txt --no-cache-dir
 
 # =======
 # Cleanup
@@ -122,20 +113,6 @@ COPY static/custom_*.html /usr/share/nginx/html/
 COPY templates/gluu_https.conf.ctmpl /app/templates/
 COPY scripts /app/scripts/
 RUN chmod +x /app/scripts/entrypoint.sh
-
-# # create non-root user
-# RUN usermod -u 1000 nginx \
-#     && usermod -a -G root nginx
-
-# # adjust ownership
-# RUN chown -R 1000:1000 /deploy \
-#     && chgrp -R 0 /deploy && chmod -R g=u /deploy \
-#     && chgrp -R 0 /etc/certs && chmod -R g=u /etc/certs \
-#     && chgrp -R 0 /etc/nginx/conf.d && chmod -R g=u /etc/nginx/conf.d \
-#     && chmod g=u /var/run/nginx.pid
-#     # && chgrp 0 /var/run/nginx.pid && chmod g=u /var/run/nginx.pid
-
-# USER 1000
 
 ENTRYPOINT ["tini", "-g", "--"]
 CMD ["sh", "/app/scripts/entrypoint.sh"]
