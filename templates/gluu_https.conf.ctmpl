@@ -44,6 +44,14 @@ upstream casa_backend {
     {{end}}
 }
 
+upstream fido2_backend {
+    {{range service "fido2|passing"}}
+        server {{.Address}}:{{.Port}};
+    {{else}}
+        server localhost:8073;
+    {{end}}
+}
+
 server {
     listen 80 default_server;
     # listen [::]:8080 default_server ipv6only=on;
@@ -184,7 +192,7 @@ server {
     }
 
     location /.well-known/fido2-configuration {
-        proxy_pass http://oxauth_backend/oxauth/restv1/fido2/configuration;
+        proxy_pass http://fido2_backend/fido2/restv1/fido2/configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -196,6 +204,18 @@ server {
     }
 
     location /.well-known/fido-configuration {
+        proxy_pass http://oxauth_backend/oxauth/restv1/fido-configuration;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+    }
+
+    location /.well-known/fido-u2f-configuration {
         proxy_pass http://oxauth_backend/oxauth/restv1/fido-configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
