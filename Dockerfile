@@ -35,6 +35,7 @@ RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VER
 # Python
 # ======
 
+RUN apk add --no-cache py3-cryptography
 COPY requirements.txt /tmp/
 RUN pip3 install -U pip \
     && pip3 install -r /tmp/requirements.txt --no-cache-dir
