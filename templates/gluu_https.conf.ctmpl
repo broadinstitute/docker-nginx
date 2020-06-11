@@ -321,5 +321,17 @@ server {
         proxy_connect_timeout 2;
     }
 
+    location /fido2 {
+        proxy_pass http://fido2_backend/fido2;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+    }
+
     include /etc/nginx/gluu/*.conf;
 }
