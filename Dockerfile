@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM nginx:1.19.1-alpine
 
 # ===============
 # Alpine packages
