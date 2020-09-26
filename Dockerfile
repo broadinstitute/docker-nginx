@@ -1,4 +1,4 @@
-FROM nginx:stable-alpine
+FROM nginx:1.19.1-alpine
 
 # ===============
 # Alpine packages
@@ -36,9 +36,10 @@ RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VER
 # ======
 
 RUN apk add --no-cache py3-cryptography
-COPY requirements.txt /tmp/
+COPY requirements.txt /app/requirements.txt
 RUN pip3 install -U pip \
-    && pip3 install -r /tmp/requirements.txt --no-cache-dir
+    && pip3 install -r /app/requirements.txt --no-cache-dir \
+    && rm -rf /src/pygluu-containerlib/.git
 
 # =======
 # Cleanup
@@ -104,7 +105,7 @@ ENV GLUU_WAIT_MAX_TIME=300 \
 LABEL name="NGINX" \
     maintainer="Gluu Inc. <support@gluu.org>" \
     vendor="Gluu Federation" \
-    version="4.2.0" \
+    version="4.2.1" \
     release="01" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
