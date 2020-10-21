@@ -3,8 +3,8 @@ import logging.config
 import os
 import sys
 
-from pygluu.containerlib import get_manager
-from pygluu.containerlib import wait_for
+from jans.pycloudlib import get_manager
+from jans.pycloudlib import wait_for
 
 from settings import LOGGING_CONFIG
 
@@ -13,12 +13,12 @@ logger = logging.getLogger("wait")
 
 
 def main():
-    config_adapter = os.environ.get("GLUU_CONFIG_ADAPTER", "consul")
+    config_adapter = os.environ.get("CN_CONFIG_ADAPTER", "consul")
     if config_adapter != "consul":
         logger.error("This container only supports Consul as config backend")
         sys.exit(1)
 
-    secret_adapter = os.environ.get("GLUU_SECRET_ADAPTER", "vault")
+    secret_adapter = os.environ.get("CN_SECRET_ADAPTER", "vault")
     if secret_adapter != "vault":
         logger.error("This container only supports Vault as secret backend")
         sys.exit(1)
