@@ -1,48 +1,48 @@
 server_tokens off;
 
 upstream auth_backend {
-    {{range service "auth-server|passing"}}
+    {{range service "jans-auth|passing"}}
         server {{.Address}}:{{.Port}};
     {{else}}
         server localhost:8081;
     {{end}}
 }
 
-# upstream oxtrust_backend {
-#     ip_hash;
-#     {{range service "oxtrust|passing"}}
-#         server {{.Address}}:{{.Port}};
-#     {{else}}
-#         server localhost:8082;
-#     {{end}}
-# }
+upstream oxtrust_backend {
+    ip_hash;
+    {{range service "oxtrust|passing"}}
+        server {{.Address}}:{{.Port}};
+    {{else}}
+        server localhost:8082;
+    {{end}}
+}
 
-# upstream oxshibboleth_backend {
-#     ip_hash;
-#     {{range service "oxshibboleth|passing"}}
-#         server {{.Address}}:{{.Port}};
-#     {{else}}
-#         server localhost:8086;
-#     {{end}}
-# }
+upstream oxshibboleth_backend {
+    ip_hash;
+    {{range service "oxshibboleth|passing"}}
+        server {{.Address}}:{{.Port}};
+    {{else}}
+        server localhost:8086;
+    {{end}}
+}
 
-# upstream oxpassport_backend {
-#     ip_hash;
-#     {{range service "oxpassport|passing"}}
-#         server {{.Address}}:{{.Port}};
-#     {{else}}
-#         server localhost:8090;
-#     {{end}}
-# }
+upstream oxpassport_backend {
+    ip_hash;
+    {{range service "oxpassport|passing"}}
+        server {{.Address}}:{{.Port}};
+    {{else}}
+        server localhost:8090;
+    {{end}}
+}
 
-# upstream casa_backend {
-#     ip_hash;
-#     {{range service "casa|passing"}}
-#         server {{.Address}}:{{.Port}};
-#     {{else}}
-#         server localhost:8099;
-#     {{end}}
-# }
+upstream casa_backend {
+    ip_hash;
+    {{range service "casa|passing"}}
+        server {{.Address}}:{{.Port}};
+    {{else}}
+        server localhost:8099;
+    {{end}}
+}
 
 upstream fido2_backend {
     {{range service "fido2|passing"}}
@@ -57,6 +57,14 @@ upstream scim_backend {
         server {{.Address}}:{{.Port}};
     {{else}}
         server localhost:8087;
+    {{end}}
+}
+
+upstream config_api_backend {
+    {{range service "jans-config-api-8074|passing"}}
+        server {{.Address}}:{{.Port}};
+    {{else}}
+        server localhost:8074;
     {{end}}
 }
 
@@ -119,15 +127,15 @@ server {
     proxy_intercept_errors on;
 
     location = / {
-        return 301 /auth-server;
+        return 301 /jans-auth;
     }
 
     location = /index.html {
-        return 301 /auth-server;
+        return 301 /jans-auth;
     }
 
-    location /auth-server {
-        proxy_pass http://auth_backend/auth-server;
+    location /jans-auth {
+        proxy_pass http://auth_backend/jans-auth;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -138,8 +146,8 @@ server {
         proxy_connect_timeout 2;
     }
 
-    location /auth-server/restv1 {
-        proxy_pass http://auth_backend/auth-server/restv1;
+    location /jans-auth/restv1 {
+        proxy_pass http://auth_backend/jans-auth/restv1;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -152,7 +160,7 @@ server {
     }
 
     location /.well-known/openid-configuration {
-        proxy_pass http://auth_backend/auth-server/.well-known/openid-configuration;
+        proxy_pass http://auth_backend/jans-auth/.well-known/openid-configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -164,7 +172,7 @@ server {
     }
 
     location /.well-known/simple-web-discovery {
-        proxy_pass http://auth_backend/auth-server/.well-known/simple-web-discovery;
+        proxy_pass http://auth_backend/jans-auth/.well-known/simple-web-discovery;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -176,7 +184,7 @@ server {
     }
 
     location /.well-known/webfinger {
-        proxy_pass http://auth_backend/auth-server/.well-known/webfinger;
+        proxy_pass http://auth_backend/jans-auth/.well-known/webfinger;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -188,7 +196,7 @@ server {
     }
 
     location /.well-known/uma2-configuration {
-        proxy_pass http://auth_backend/auth-server/restv1/uma2-configuration;
+        proxy_pass http://auth_backend/jans-auth/restv1/uma2-configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -212,7 +220,7 @@ server {
     }
 
     location /.well-known/fido-configuration {
-        proxy_pass http://auth_backend/auth-server/restv1/fido-configuration;
+        proxy_pass http://auth_backend/jans-auth/restv1/fido-configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -224,7 +232,7 @@ server {
     }
 
     location /.well-known/fido-u2f-configuration {
-        proxy_pass http://auth_backend/auth-server/restv1/fido-configuration;
+        proxy_pass http://auth_backend/jans-auth/restv1/fido-configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -236,7 +244,7 @@ server {
     }
 
     location /firebase-messaging-sw.js {
-        proxy_pass http://auth_backend/auth-server/firebase-messaging-sw.js;
+        proxy_pass http://auth_backend/jans-auth/firebase-messaging-sw.js;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -248,7 +256,7 @@ server {
     }
 
     location /device-code {
-        proxy_pass http://auth_backend/auth-server/device_authorization.htm;
+        proxy_pass http://auth_backend/jans-auth/device_authorization.htm;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -259,66 +267,66 @@ server {
         proxy_connect_timeout 2;
     }
 
-    # location /identity {
-    #     proxy_pass http://oxtrust_backend/identity;
-    #     proxy_set_header Host $host;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    #     proxy_set_header X-Forwarded-Host $host:$server_port;
-    #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #     proxy_set_header X-Forwarded-Proto $scheme;
-    #     proxy_redirect off;
-    #     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-    #     proxy_connect_timeout 2;
-    # }
+    location /identity {
+        proxy_pass http://oxtrust_backend/identity;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+    }
 
-    # location /identity/restv1/scim/ {
-    #     proxy_pass http://scim_backend/scim/restv1/scim/;
-    #     proxy_set_header Host $host;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    #     proxy_set_header X-Forwarded-Host $host:$server_port;
-    #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #     proxy_set_header X-Forwarded-Proto $scheme;
-    #     proxy_redirect off;
-    #     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-    #     proxy_connect_timeout 2;
-    #     proxy_intercept_errors off;
-    # }
+    location /identity/restv1/scim/ {
+        proxy_pass http://scim_backend/scim/restv1/scim/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+        proxy_intercept_errors off;
+    }
 
-    # location /idp {
-    #     proxy_pass http://oxshibboleth_backend/idp;
-    #     proxy_set_header Host $host;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    #     proxy_set_header X-Forwarded-Host $host:$server_port;
-    #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #     proxy_set_header X-Forwarded-Proto $scheme;
-    #     proxy_redirect off;
-    #     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-    #     proxy_connect_timeout 2;
-    # }
+    location /idp {
+        proxy_pass http://oxshibboleth_backend/idp;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+    }
 
-    # location /passport {
-    #     proxy_pass http://oxpassport_backend/passport;
-    #     proxy_set_header Host $host;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    #     proxy_set_header X-Forwarded-Host $host:$server_port;
-    #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #     proxy_set_header X-Forwarded-Proto $scheme;
-    #     proxy_redirect off;
-    #     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-    #     proxy_connect_timeout 2;
-    # }
+    location /passport {
+        proxy_pass http://oxpassport_backend/passport;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+    }
 
-    # location /casa {
-    #     proxy_pass http://casa_backend/casa;
-    #     proxy_set_header Host $host;
-    #     proxy_set_header X-Real-IP $remote_addr;
-    #     proxy_set_header X-Forwarded-Host $host:$server_port;
-    #     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #     proxy_set_header X-Forwarded-Proto $scheme;
-    #     proxy_redirect off;
-    #     proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-    #     proxy_connect_timeout 2;
-    # }
+    location /casa {
+        proxy_pass http://casa_backend/casa;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+    }
 
     location /fido2 {
         proxy_pass http://fido2_backend/fido2;
@@ -334,6 +342,19 @@ server {
 
     location /scim {
         proxy_pass http://scim_backend/scim;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+        proxy_intercept_errors off;
+    }
+
+    location /jans-config-api/ {
+        proxy_pass http://config_api_backend/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
