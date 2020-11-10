@@ -208,7 +208,7 @@ server {
     }
 
     location /.well-known/fido2-configuration {
-        proxy_pass http://fido2_backend/fido2/restv1/fido2/configuration;
+        proxy_pass http://fido2_backend/jans-fido2/restv1/configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -233,6 +233,18 @@ server {
 
     location /.well-known/fido-u2f-configuration {
         proxy_pass http://auth_backend/jans-auth/restv1/fido-configuration;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-Host $host:$server_port;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+        proxy_connect_timeout 2;
+    }
+
+    location /.well-known/scim-configuration {
+        proxy_pass http://scim_backend/jans-scim/restv1/scim-configuration;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -279,19 +291,6 @@ server {
         proxy_connect_timeout 2;
     }
 
-    location /identity/restv1/scim/ {
-        proxy_pass http://scim_backend/scim/restv1/scim/;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-Host $host:$server_port;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_redirect off;
-        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
-        proxy_connect_timeout 2;
-        proxy_intercept_errors off;
-    }
-
     location /idp {
         proxy_pass http://oxshibboleth_backend/idp;
         proxy_set_header Host $host;
@@ -328,8 +327,8 @@ server {
         proxy_connect_timeout 2;
     }
 
-    location /fido2 {
-        proxy_pass http://fido2_backend/fido2;
+    location /jans-fido2 {
+        proxy_pass http://fido2_backend/jans-fido2;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
@@ -340,8 +339,8 @@ server {
         proxy_connect_timeout 2;
     }
 
-    location /scim {
-        proxy_pass http://scim_backend/scim;
+    location /jans-scim {
+        proxy_pass http://scim_backend/jans-scim;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
