@@ -352,8 +352,8 @@ server {
         proxy_intercept_errors off;
     }
 
-    location /jans-config-api/ {
-        proxy_pass http://config_api_backend/;
+    location /jans-config-api {
+        proxy_pass http://config_api_backend/jans-config-api;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-Host $host:$server_port;
