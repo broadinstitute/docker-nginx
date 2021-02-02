@@ -6,7 +6,7 @@ FROM nginx:1.19.1-alpine
 
 RUN apk update \
     && apk add --no-cache openssl py3-pip tini curl \
-    && apk add --no-cache --virtual build-deps git
+    && apk add --no-cache --virtual build-deps git gcc musl-dev python3-dev libffi-dev openssl-dev
 
 # =====
 # nginx
@@ -35,7 +35,6 @@ RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VER
 # Python
 # ======
 
-RUN apk add --no-cache py3-cryptography
 COPY requirements.txt /app/requirements.txt
 RUN pip3 install -U pip \
     && pip3 install -r /app/requirements.txt --no-cache-dir \
@@ -105,7 +104,7 @@ ENV GLUU_WAIT_MAX_TIME=300 \
 LABEL name="NGINX" \
     maintainer="Gluu Inc. <support@gluu.org>" \
     vendor="Gluu Federation" \
-    version="4.2.2" \
+    version="4.2.3" \
     release="01" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
