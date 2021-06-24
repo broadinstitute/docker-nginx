@@ -106,7 +106,7 @@ LABEL name="NGINX" \
     maintainer="Gluu Inc. <support@gluu.org>" \
     vendor="Gluu Federation" \
     version="4.3.0" \
-    release="dev" \
+    release="b1" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
 
