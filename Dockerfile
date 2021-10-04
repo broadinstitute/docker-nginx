@@ -1,12 +1,12 @@
-FROM nginx:1.19.6-alpine
+FROM nginx:1.21.3-alpine
 
 # ===============
 # Alpine packages
 # ===============
 
 RUN apk update \
-    && apk add --no-cache openssl py3-pip tini curl \
-    && apk add --no-cache --virtual build-deps git gcc musl-dev python3-dev libffi-dev openssl-dev
+    && apk add --no-cache openssl py3-pip tini curl py3-cryptography py3-psycopg2 py3-grpcio \
+    && apk add --no-cache --virtual build-deps git
 
 # =====
 # nginx
@@ -37,7 +37,6 @@ RUN wget -q https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VER
 
 COPY requirements.txt /app/requirements.txt
 RUN pip3 install -U pip \
-    && pip3 install --no-cache-dir 'cryptography<3.4' \
     && pip3 install -r /app/requirements.txt --no-cache-dir \
     && rm -rf /src/pygluu-containerlib/.git
 
