@@ -12,7 +12,7 @@ Note the following points:
 ## Versions
 
 See [Releases](https://github.com/GluuFederation/docker-nginx/releases) for stable versions.
-For bleeding-edge/unstable version, use `gluufederation/nginx:4.3.0_dev`.
+For bleeding-edge/unstable version, use `gluufederation/nginx:4.3.1_dev`.
 
 ## Environment Variables
 

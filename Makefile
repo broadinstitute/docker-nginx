@@ -1,4 +1,4 @@
-GLUU_VERSION=4.3.0
+GLUU_VERSION=4.3.1
 IMAGE_NAME=gluufederation/nginx
 UNSTABLE_VERSION=dev
 

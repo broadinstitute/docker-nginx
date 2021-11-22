@@ -5,7 +5,8 @@ FROM nginx:1.21.3-alpine
 # ===============
 
 RUN apk update \
-    && apk add --no-cache openssl py3-pip tini curl py3-cryptography py3-psycopg2 py3-grpcio \
+    && apk add --no-cache openssl py3-pip tini curl py3-cryptography py3-psycopg2 \
+    && apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community py3-grpcio \
     && apk add --no-cache --virtual build-deps git
 
 # =====
@@ -104,8 +105,8 @@ ENV GLUU_WAIT_MAX_TIME=300 \
 LABEL name="NGINX" \
     maintainer="Gluu Inc. <support@gluu.org>" \
     vendor="Gluu Federation" \
-    version="4.3.0" \
-    release="01" \
+    version="4.3.1" \
+    release="dev" \
     summary="Gluu NGINX" \
     description="Customized NGINX server for Gluu Server"
 
